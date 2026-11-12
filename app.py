@@ -8,6 +8,16 @@ st.set_page_config(page_title="Shopify → Asana", page_icon="📋", layout="wid
 st.title("📋 Shopify → Asana")
 st.caption("Pick a store, paste product titles, check the info, then send it to an Asana board.")
 
+# Optional team password: only asked for if APP_PASSWORD is set in the secrets
+if st.secrets.get("APP_PASSWORD") and not st.session_state.get("unlocked"):
+    pw = st.text_input("Team password", type="password")
+    if pw == st.secrets["APP_PASSWORD"]:
+        st.session_state.unlocked = True
+        st.rerun()
+    if pw:
+        st.error("Wrong password.")
+    st.stop()
+
 STORES = dict(st.secrets.get("STORES", {}))          # "Queen UK" = "queen-uk.myshopify.com"
 DEFAULT_BOARDS = dict(st.secrets.get("ASANA_BOARDS", {}))  # "Queen UK" = "<project gid>"
 COLUMNS = ["Send", "Task name"] + list(ASANA_COLUMNS) + ["Sizes"]
